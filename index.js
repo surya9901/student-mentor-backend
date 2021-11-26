@@ -14,7 +14,7 @@ app.use(cors({
 
 const mongodb = require("mongodb")
 const mongoClient = mongodb.MongoClient;
-const url = process.env.DB
+const url = process.env.DB || "mongodb://localhost:27017"
 
 app.get("/mentor", async (req, res) => {
     try {
@@ -141,7 +141,7 @@ app.put("/edit-student/:id", async (req, res) => {
 })
 
 app.get("/filter-student/:id", async (req, res) => {
-    try {     
+    try {
         let client = await mongoClient.connect(url)
         let db = client.db("student_mentor")
         let data = await db.collection("student").find({ "student_details.Mentor": `${req.params.id}` }).toArray()
@@ -154,6 +154,22 @@ app.get("/filter-student/:id", async (req, res) => {
     }
 })
 
+app.put("/update-multiple", async (req, res) => {
+    try {
+        const client = await mongoClient.connect(url)
+        const db = client.db("student_mentor")
+        const data = await db.collection("student").updateMany({ "student_details.Mentor": `${req.body.showMentor}` }, { $set: { "student_details.Mentor": `${req.body.assignMentor}` } })
+        console.log(data)
+        await client.close()
+        res.json({
+            message: "Multiple users updated"
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "something went wrong"
+        })
+    }
+})
 
 app.listen(port, () => {
     console.log(`App listening to ${port}`)
