@@ -14,7 +14,7 @@ app.use(cors({
 
 const mongodb = require("mongodb")
 const mongoClient = mongodb.MongoClient;
-const url = process.env.DB || "mongodb://localhost:27017"
+const url = process.env.DB
 
 app.get("/mentor", async (req, res) => {
     try {
